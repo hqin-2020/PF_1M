@@ -8,7 +8,6 @@ from tqdm import tqdm
 import multiprocessing
 import pickle
 import os
-import psutil
 import gc
 
 from PF_Aso1_0_CPU import *
@@ -20,7 +19,7 @@ if __name__ == '__main__':
     datadir = workdir + '/data/'
     outputdir = '/project2/lhansen/particle_filtering/'
 
-    seed = 8
+    seed = 9
 
     obs_series = pd.read_csv(datadir + 'data.csv', delimiter=',')
     obs_series = np.array(obs_series.iloc[:,1:]).T
@@ -47,13 +46,11 @@ if __name__ == '__main__':
     Output_0 = pool.map(init, tqdm(Input_0))
     del(Input_0)
     gc.collect()
-    print('1', psutil.Process().memory_full_info().rss/(1024*1024*1024))
     θ_t_particle = [i[0] for i in Output_0]
     X_t_particle = [i[1] for i in Output_0]
     H_t_particle = [i[2] for i in Output_0]
     del(Output_0)
     gc.collect()
-    print('2', psutil.Process().memory_full_info().rss/(1024*1024*1024))
     with open(casedir + 'θ_0.pkl', 'wb') as f:
         pickle.dump(θ_t_particle, f)
     del(θ_t_particle)
@@ -80,12 +77,11 @@ if __name__ == '__main__':
         gc.collect()
         del(H_t_particle)
         gc.collect()
-        print('3', psutil.Process().memory_full_info().rss/(1024*1024*1024))
+
         pool = multiprocessing.Pool()
         Output = pool.map(recursive, Input)
         del(Input)
         gc.collect()
-        print('4', psutil.Process().memory_full_info().rss/(1024*1024*1024))
 
         θ_t_next_particle = [i[0] for i in Output]
         X_t_next_particle = [i[1] for i in Output]
@@ -131,12 +127,10 @@ if __name__ == '__main__':
                 for n in range(count_all[i]):
                     X_t_particle.append(X_t_next_particle[i])
                     H_t_particle.append(H_t_next_particle[i])
-        print('5', psutil.Process().memory_full_info().rss/(1024*1024*1024))
         del(count_all)    
         gc.collect()        
         del(X_t_next_particle)
         gc.collect()
         del(H_t_next_particle)
         gc.collect()
-        print('6', psutil.Process().memory_full_info().rss/(1024*1024*1024))
         

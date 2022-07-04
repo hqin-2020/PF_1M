@@ -1,15 +1,14 @@
 import numpy as np
 import scipy as sp
 import pandas as pd
-import matplotlib.pyplot as plt
 import seaborn as sns
 import time
 from tqdm import tqdm
 import multiprocessing
 import pickle
 import os
-import psutil
 import gc
+import psutil
 
 from PF_Aso1_0_CPU import *
 
@@ -26,7 +25,7 @@ if __name__ == '__main__':
     obs_series = np.array(obs_series.iloc[:,1:]).T
 
     T = obs_series.shape[1]
-    N = 1_000_000
+    N = 1000000
     Λ_scale = 1.0
     cd_scale = 1.0
 
@@ -48,16 +47,13 @@ if __name__ == '__main__':
     del(Input_0)
     gc.collect()
     print('1', psutil.Process().memory_full_info().rss/(1024*1024*1024))
-    θ_t_particle = [i[0] for i in Output_0]
-    X_t_particle = [i[1] for i in Output_0]
-    H_t_particle = [i[2] for i in Output_0]
+    D_t_next = obs_series[:,[1]]
+    Input = [[D_t_next, Output_0[i][1], Output_0[i][2], seed+i] for i in range(N)]
     del(Output_0)
     gc.collect()
     print('2', psutil.Process().memory_full_info().rss/(1024*1024*1024))
     with open(casedir + 'θ_0.pkl', 'wb') as f:
         pickle.dump(θ_t_particle, f)
-    del(θ_t_particle)
-    gc.collect()
     # with open(casedir + 'X_0.pkl', 'wb') as f:
     #     pickle.dump(X_t_particle, f)
     # with open(casedir + 'H_0.pkl', 'wb') as f:
@@ -68,36 +64,21 @@ if __name__ == '__main__':
         pickle.dump(list(np.ones(N)/N), f)
     run_time = time.time() - start_time
     print(run_time)    
-    
     for t in tqdm(range(T-1)):
-        
-        D_t_next = obs_series[:,[t+1]]
-        
-        Input = [[D_t_next, X_t_particle[i], H_t_particle[i], seed+t+i] for i in range(N)]
-        del(D_t_next)
-        gc.collect()
-        del(X_t_particle)
-        gc.collect()
-        del(H_t_particle)
-        gc.collect()
-        print('3', psutil.Process().memory_full_info().rss/(1024*1024*1024))
+
         pool = multiprocessing.Pool()
         Output = pool.map(recursive, Input)
+        print('3',psutil.Process().memory_full_info().rss/(1024*1024*1024))
         del(Input)
         gc.collect()
-        print('4', psutil.Process().memory_full_info().rss/(1024*1024*1024))
 
         θ_t_next_particle = [i[0] for i in Output]
-        X_t_next_particle = [i[1] for i in Output]
-        H_t_next_particle = [i[2] for i in Output]
-        ν_t_next_particle = [i[3] for i in Output]    
-        del(Output)
-        gc.collect()
-
         with open(casedir + 'θ_' + str(t+1) + '.pkl', 'wb') as f:
             pickle.dump(θ_t_next_particle, f)
         del(θ_t_next_particle)
         gc.collect()
+        ν_t_next_particle = [i[3] for i in Output]    
+
         # with open(casedir + 'X_' + str(t+1) + '.pkl', 'wb') as f:
         #     pickle.dump(X_t_next_particle, f)
         # with open(casedir + 'H_' + str(t+1) + '.pkl', 'wb') as f:
@@ -115,28 +96,25 @@ if __name__ == '__main__':
                     w_t_next[i] = w_t_next[i] - (np.sum(w_t_next[:-1]) - 1)
                     break
             count_all = sp.stats.multinomial.rvs(N, w_t_next)
-        
+        print('4',psutil.Process().memory_full_info().rss/(1024*1024*1024))
         with open(casedir + 'w_' + str(t+1) + '.pkl', 'wb') as f:
             pickle.dump(w_t_next, f)
         del(w_t_next)
         gc.collect()
         with open(casedir + 'count_' + str(t+1) + '.pkl', 'wb') as f:
             pickle.dump(count_all, f)
-        
-        X_t_particle = []
-        H_t_particle = []
-        
+
+        D_t_next = obs_series[:,[t+1]]
+        Input = []
         for i in range(N):
             if count_all[i] != 0:
                 for n in range(count_all[i]):
-                    X_t_particle.append(X_t_next_particle[i])
-                    H_t_particle.append(H_t_next_particle[i])
-        print('5', psutil.Process().memory_full_info().rss/(1024*1024*1024))
-        del(count_all)    
-        gc.collect()        
-        del(X_t_next_particle)
+                    Input.append([D_t_next, Output[i][1], Output[i][2], seed+t+i])
+        print('5',psutil.Process().memory_full_info().rss/(1024*1024*1024))
+        del(Output)
         gc.collect()
-        del(H_t_next_particle)
-        gc.collect()
-        print('6', psutil.Process().memory_full_info().rss/(1024*1024*1024))
+        del(count_all)        
+        gc.collect()    
+        print('6',psutil.Process().memory_full_info().rss/(1024*1024*1024))
+        
         

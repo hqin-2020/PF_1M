@@ -4,11 +4,10 @@
 #SBATCH --output=pf10007.out
 #SBATCH --error=pf10007.err
 #SBATCH --time=1-12:00:00
-#SBATCH --partition=gpu2
-#SBATCH --gres=gpu:1
-#SBATCH --nodes=4
-#SBATCH --cpus-per-task=10
-#SBATCH --mem=60G
+#SBATCH --partition=bigmem2
+#SBATCH --nodes=2
+#SBATCH --cpus-per-task=28
+#SBATCH --mem=512G
 
 # Load Python modules
 module load python/anaconda-2020.02

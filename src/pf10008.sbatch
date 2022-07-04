@@ -5,8 +5,8 @@
 #SBATCH --error=pf10008.err
 #SBATCH --time=1-12:00:00
 #SBATCH --partition=bigmem2
-#SBATCH --nodes=1
-#SBATCH --cpus-per-task=28
+#SBATCH --nodes=2
+#SBATCH --cpus-per-task=16
 #SBATCH --mem=512G
 
 # Load Python modules

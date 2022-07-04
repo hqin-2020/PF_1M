@@ -8,7 +8,7 @@
 #SBATCH --gres=gpu:1
 #SBATCH --nodes=4
 #SBATCH --cpus-per-task=10
-#SBATCH --mem=63G
+#SBATCH --mem=60G
 
 # Load Python modules
 module load python/anaconda-2020.02

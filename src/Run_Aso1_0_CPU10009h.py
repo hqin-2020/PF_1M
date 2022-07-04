@@ -19,7 +19,7 @@ if __name__ == '__main__':
     datadir = workdir + '/data/'
     outputdir = '/project2/lhansen/particle_filtering/'
 
-    seed = 9
+    seed = 8
 
     obs_series = pd.read_csv(datadir + 'data.csv', delimiter=',')
     obs_series = np.array(obs_series.iloc[:,1:]).T
@@ -52,8 +52,11 @@ if __name__ == '__main__':
     del(Output_0)
     gc.collect()
     print('2', psutil.Process().memory_full_info().rss/(1024*1024*1024))
+    θ_t_particle = [i[0] for i in Output_0]
     with open(casedir + 'θ_0.pkl', 'wb') as f:
         pickle.dump(θ_t_particle, f)
+    del(θ_t_particle)
+    gc.collect()
     # with open(casedir + 'X_0.pkl', 'wb') as f:
     #     pickle.dump(X_t_particle, f)
     # with open(casedir + 'H_0.pkl', 'wb') as f:

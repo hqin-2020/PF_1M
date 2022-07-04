@@ -13,4 +13,4 @@
 # Load Python modules
 module load python/anaconda-2020.02
 
-python Run_Aso1_0_CPU10007.py  
+python Run_Aso1_0_CPU10008.py  

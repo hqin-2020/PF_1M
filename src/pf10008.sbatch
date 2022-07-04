@@ -7,7 +7,7 @@
 #SBATCH --partition=gpu2
 #SBATCH --gres=gpu:1
 #SBATCH --nodes=4
-#SBATCH --cpus-per-task=10
+#SBATCH --cpus-per-task=9
 #SBATCH --mem=63G
 
 # Load Python modules

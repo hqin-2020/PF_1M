@@ -1,8 +1,8 @@
 #!/bin/bash
 
-#SBATCH --job-name=pf10006
-#SBATCH --output=pf10006.out
-#SBATCH --error=pf10006.err
+#SBATCH --job-name=pf10007
+#SBATCH --output=pf10007.out
+#SBATCH --error=pf10007.err
 #SBATCH --time=1-12:00:00
 #SBATCH --partition=gpu2
 #SBATCH --gres=gpu:N
@@ -12,4 +12,4 @@
 # Load Python modules
 module load python/booth/3.8/3.8.5
 
-srun python3 Run_Aso1_0_CPU10006.py  
+srun python3 Run_Aso1_0_CPU10007.py  

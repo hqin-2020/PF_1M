@@ -1,8 +1,8 @@
 #!/bin/bash
 
-#SBATCH --job-name=pf10007
-#SBATCH --output=pf10007.out
-#SBATCH --error=pf10007.err
+#SBATCH --job-name=pf10008
+#SBATCH --output=pf10008.out
+#SBATCH --error=pf10008.err
 #SBATCH --time=1-12:00:00
 #SBATCH --partition=gpu2
 #SBATCH --gres=gpu:1
